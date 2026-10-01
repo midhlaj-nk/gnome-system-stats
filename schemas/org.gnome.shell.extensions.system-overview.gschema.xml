@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.system-overview"
+          path="/org/gnome/shell/extensions/system-overview/">
+    <key name="pinned" type="as">
+      <default>['mouse','battery']</default>
+      <summary>Sensors shown in the panel</summary>
+      <description>List of sensor ids displayed in the top bar.</description>
+    </key>
+  </schema>
+</schemalist>

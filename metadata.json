@@ -1,0 +1,7 @@
+{
+  "uuid": "mouse-battery@midhexe",
+  "name": "System Overview",
+  "description": "Mouse/device battery plus CPU, RAM, battery and network in the top bar.",
+  "shell-version": ["42"],
+  "version": 2
+}
