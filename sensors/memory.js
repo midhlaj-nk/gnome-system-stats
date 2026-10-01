@@ -1,8 +1,9 @@
 /* RAM usage from /proc/meminfo. */
-const { GLib } = imports.gi;
-const ByteArray = imports.byteArray;
+import GLib from 'gi://GLib';
 
-var Sensor = {
+const decoder = new TextDecoder();
+
+export const Sensor = {
     id: 'memory',
     label: 'RAM',
     icon: 'sysov-ram-symbolic',
@@ -16,7 +17,7 @@ var Sensor = {
         let [ok, contents] = GLib.file_get_contents('/proc/meminfo');
         if (!ok) return;
         let m = {};
-        ByteArray.toString(contents).split('\n').forEach(l => {
+        decoder.decode(contents).split('\n').forEach(l => {
             let idx = l.indexOf(':');
             if (idx > 0) m[l.slice(0, idx)] = parseInt(l.slice(idx + 1), 10);
         });

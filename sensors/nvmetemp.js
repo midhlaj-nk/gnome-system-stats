@@ -1,10 +1,9 @@
 /* NVMe composite temperature from hwmon. */
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const HwMon = Me.imports.sensors.hwmon;
+import * as HwMon from './hwmon.js';
 
 let path = null;
 
-var Sensor = {
+export const Sensor = {
     id: 'nvmetemp',
     label: 'Disk temp',
     icon: 'drive-harddisk-solidstate-symbolic',

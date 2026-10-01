@@ -1,6 +1,5 @@
 /* GPU temperature from hwmon (amdgpu edge, nouveau/i915 fallbacks). */
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const HwMon = Me.imports.sensors.hwmon;
+import * as HwMon from './hwmon.js';
 
 const SOURCES = [
     ['amdgpu', 'edge'],
@@ -10,7 +9,7 @@ const SOURCES = [
 
 let path = null;
 
-var Sensor = {
+export const Sensor = {
     id: 'gputemp',
     label: 'GPU temp',
     icon: 'sysov-gpu-symbolic',

@@ -1,13 +1,14 @@
 /* Laptop battery from /sys/class/power_supply/BAT0. */
-const { GLib } = imports.gi;
-const ByteArray = imports.byteArray;
+import GLib from 'gi://GLib';
 
-function readFile(path) {
+const decoder = new TextDecoder();
+
+export function readFile(path) {
     let [ok, contents] = GLib.file_get_contents(path);
-    return ok ? ByteArray.toString(contents).trim() : null;
+    return ok ? decoder.decode(contents).trim() : null;
 }
 
-var Sensor = {
+export const Sensor = {
     id: 'battery',
     label: 'Battery',
     icon: 'battery-good-symbolic',

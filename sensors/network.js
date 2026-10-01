@@ -1,6 +1,7 @@
 /* Network throughput from /proc/net/dev (sum of all non-loopback ifaces). */
-const { GLib } = imports.gi;
-const ByteArray = imports.byteArray;
+import GLib from 'gi://GLib';
+
+const decoder = new TextDecoder();
 
 let prevRx = 0;
 let prevTx = 0;
@@ -16,7 +17,7 @@ function readBytes() {
     let [ok, contents] = GLib.file_get_contents('/proc/net/dev');
     if (!ok) return [0, 0];
     let rx = 0, tx = 0;
-    ByteArray.toString(contents).split('\n').forEach(l => {
+    decoder.decode(contents).split('\n').forEach(l => {
         let idx = l.indexOf(':');
         if (idx < 0) return;
         let name = l.slice(0, idx).trim();
@@ -28,7 +29,7 @@ function readBytes() {
     return [rx, tx];
 }
 
-var Sensor = {
+export const Sensor = {
     id: 'network',
     label: 'Net',
     icon: 'network-transmit-receive-symbolic',

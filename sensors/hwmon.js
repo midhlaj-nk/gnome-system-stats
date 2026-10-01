@@ -4,21 +4,23 @@
  * resolved by their `name` file instead of a hardcoded index. Callers cache the
  * resolved path and drop it on a failed read so the next tick re-resolves.
  */
-const { GLib, Gio } = imports.gi;
-const ByteArray = imports.byteArray;
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+
+const decoder = new TextDecoder();
 
 /* Contents of a sysfs file, trimmed, or null when unreadable. */
-function readValue(path) {
+export function readValue(path) {
     try {
         let [ok, contents] = GLib.file_get_contents(path);
-        return ok ? ByteArray.toString(contents).trim() : null;
+        return ok ? decoder.decode(contents).trim() : null;
     } catch (e) {
         return null;
     }
 }
 
 /* Base directory of the first hwmon chip whose name is `chip`, or null. */
-function findChip(chip) {
+export function findChip(chip) {
     let names = [];
     try {
         let dir = Gio.File.new_for_path('/sys/class/hwmon');
@@ -42,7 +44,7 @@ function findChip(chip) {
 
 /* Path of the `prefix`N_input whose sibling label matches `label`. A null label
  * takes input 1 directly, for chips that publish no labels at all. */
-function findInput(chip, label, prefix = 'temp') {
+export function findInput(chip, label, prefix = 'temp') {
     let base = findChip(chip);
     if (!base)
         return null;
@@ -56,6 +58,6 @@ function findInput(chip, label, prefix = 'temp') {
 }
 
 /* Millidegrees -> whole degrees C. */
-function toCelsius(raw) {
+export function toCelsius(raw) {
     return Math.round(parseInt(raw, 10) / 1000);
 }

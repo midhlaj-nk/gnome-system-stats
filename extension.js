@@ -1,4 +1,4 @@
-/* System Overview — GNOME Shell 42 extension
+/* System Overview — GNOME Shell 45+ extension (ES modules)
  *
  * Core only. Each metric lives in its own module under sensors/.
  * A single poll loop ticks every BASE_TICK seconds and runs each
@@ -15,41 +15,39 @@
  *     color(value)      -> css color string or null     (optional) }
  */
 
-const { GObject, St, GLib, Clutter } = imports.gi;
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Icons = Me.imports.sensors.icons;
+import GObject from 'gi://GObject';
+import St from 'gi://St';
+import GLib from 'gi://GLib';
+import Clutter from 'gi://Clutter';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+import * as Icons from './sensors/icons.js';
+import {Sensor as Mouse} from './sensors/mouse.js';
+import {Sensor as Battery} from './sensors/battery.js';
+import {Sensor as Cpu} from './sensors/cpu.js';
+import {Sensor as Memory} from './sensors/memory.js';
+import {Sensor as Temp} from './sensors/temp.js';
+import {Sensor as GpuTemp} from './sensors/gputemp.js';
+import {Sensor as NvmeTemp} from './sensors/nvmetemp.js';
+import {Sensor as Fan} from './sensors/fan.js';
+import {Sensor as Network} from './sensors/network.js';
 
 const BASE_TICK = 2;                 // seconds between loop ticks
-const SENSOR_MODULES = ['mouse', 'battery', 'cpu', 'memory', 'temp', 'gputemp',
-                        'nvmetemp', 'fan', 'network'];
+const SENSORS = [Mouse, Battery, Cpu, Memory, Temp, GpuTemp, NvmeTemp, Fan,
+                 Network];
 const SECTION_ORDER = ['Devices', 'System', 'Network'];
-
-let indicator = null;
-
-function loadSensors() {
-    let list = [];
-    for (let name of SENSOR_MODULES) {
-        try {
-            list.push(Me.imports.sensors[name].Sensor);
-        } catch (e) {
-            logError(e, `system-overview: failed loading sensor "${name}"`);
-        }
-    }
-    return list;
-}
 
 const OverviewIndicator = GObject.registerClass(
 class OverviewIndicator extends PanelMenu.Button {
-    _init() {
+    _init(extension) {
         super._init(0.0, 'System Overview');
 
-        this._settings = ExtensionUtils.getSettings(
-            'org.gnome.shell.extensions.system-overview');
-        this._sensors = loadSensors();
+        this._dir = extension.dir;
+        this._settings = extension.getSettings();
+        this._sensors = SENSORS;
 
         // --- panel: a box we refill whenever the pinned set changes
         this._box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
@@ -88,7 +86,7 @@ class OverviewIndicator extends PanelMenu.Button {
                 let item = new PopupMenu.PopupSwitchMenuItem(
                     this._rowLabel(s), on);
                 item.insert_child_at_index(new St.Icon({
-                    gicon: Icons.gicon(s.icon),
+                    gicon: Icons.gicon(s.icon, this._dir),
                     style_class: 'popup-menu-icon',
                 }), 0);
                 item.connect('toggled', (_item, state) => {
@@ -126,7 +124,7 @@ class OverviewIndicator extends PanelMenu.Button {
                 continue;
             let group = new St.BoxLayout({ style: 'padding-right: 8px;' });
             let icon = new St.Icon({
-                gicon: Icons.gicon(s.icon),
+                gicon: Icons.gicon(s.icon, this._dir),
                 style_class: 'system-status-icon',
                 icon_size: 14,
                 y_align: Clutter.ActorAlign.CENTER,
@@ -200,16 +198,14 @@ class OverviewIndicator extends PanelMenu.Button {
     }
 });
 
-function init() {}
+export default class SystemOverviewExtension extends Extension {
+    enable() {
+        this._indicator = new OverviewIndicator(this);
+        Main.panel.addToStatusArea(this.uuid, this._indicator);
+    }
 
-function enable() {
-    indicator = new OverviewIndicator();
-    Main.panel.addToStatusArea('system-overview', indicator);
-}
-
-function disable() {
-    if (indicator) {
-        indicator.destroy();
-        indicator = null;
+    disable() {
+        this._indicator?.destroy();
+        this._indicator = null;
     }
 }

@@ -1,12 +1,11 @@
 /* Mouse battery via upower (async spawn — upower has no /sys node here). */
-const { Gio } = imports.gi;
-const ByteArray = imports.byteArray;
+import Gio from 'gi://Gio';
 
 const CMD = ['bash', '-c',
     "for d in $(upower -e | grep -i mouse); do " +
     "upower -i \"$d\" | grep -i percentage | grep -oE '[0-9]+'; done"];
 
-var Sensor = {
+export const Sensor = {
     id: 'mouse',
     label: 'Mouse',
     icon: 'input-mouse-symbolic',

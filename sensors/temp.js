@@ -1,6 +1,5 @@
 /* CPU package temperature from hwmon. */
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const HwMon = Me.imports.sensors.hwmon;
+import * as HwMon from './hwmon.js';
 
 /* First match wins: AMD Tctl, Intel package, then the ThinkPad EC reading. */
 const SOURCES = [
@@ -11,7 +10,7 @@ const SOURCES = [
 
 let path = null;
 
-var Sensor = {
+export const Sensor = {
     id: 'temp',
     label: 'CPU temp',
     icon: 'sysov-temp-symbolic',

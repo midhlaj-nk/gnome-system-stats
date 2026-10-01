@@ -2,6 +2,8 @@
   "uuid": "mouse-battery@midhexe",
   "name": "System Overview",
   "description": "Mouse/device battery plus CPU, RAM, battery and network in the top bar.",
-  "shell-version": ["42"],
-  "version": 2
+  "shell-version": ["45", "46", "47", "48", "49", "50"],
+  "settings-schema": "org.gnome.shell.extensions.system-overview",
+  "url": "https://github.com/midhlaj-nk/gnome-system-stats",
+  "version": 3
 }

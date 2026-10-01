@@ -1,12 +1,11 @@
 /* Fan speed from hwmon: the fastest of however many fans the chip exposes. */
-const Me = imports.misc.extensionUtils.getCurrentExtension();
-const HwMon = Me.imports.sensors.hwmon;
+import * as HwMon from './hwmon.js';
 
 const CHIPS = ['thinkpad', 'dell_smm', 'asus', 'acpi_fan'];
 
 let base = null;
 
-var Sensor = {
+export const Sensor = {
     id: 'fan',
     label: 'Fan',
     icon: 'sysov-fan-symbolic',
